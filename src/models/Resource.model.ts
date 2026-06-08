@@ -34,11 +34,13 @@ const ResourceSchema = new Schema<IResource>(
     bufferTime: {
       before: {
         type: Number,
+        default: 0,
         min: 0,
         max: 120,
       },
       after: {
         type: Number,
+        default: 0,
         min: 0,
         max: 120,
       },
@@ -77,11 +79,23 @@ ResourceSchema.pre('findOne', function() {
   this.where({ isDeleted: false });
 });
 
+ResourceSchema.pre('aggregate', function() {
+  this.pipeline().unshift({ $match: { isDeleted: false } });
+});
+
 // Method for soft delete
 ResourceSchema.methods.softDelete = async function() {
   this.isDeleted = true;
   this.deletedAt = new Date();
   this.isActive = false;
+  await this.save();
+};
+
+// Method for restore
+ResourceSchema.methods.restore = async function() {
+  this.isDeleted = false;
+  this.deletedAt = undefined;
+  this.isActive = true;
   await this.save();
 };
 
