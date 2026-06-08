@@ -22,8 +22,9 @@ export interface IAuthResponse {
     role: UserRole;
     organizationId: string;
   };
-  token: string;
-  refreshToken?: string;
+  accessToken: string;
+  refreshToken: string;
+  expiresIn: number; // seconds until access token expires
 }
 
 export interface IJwtPayload {
@@ -33,3 +34,8 @@ export interface IJwtPayload {
   organizationId: string;
 }
 
+export interface ITokenResponse {
+  accessToken: string;
+  refreshToken: string;
+  expiresIn: number;
+}

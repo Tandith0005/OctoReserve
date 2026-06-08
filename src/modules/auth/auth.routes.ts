@@ -15,6 +15,6 @@ router.post('/refresh-token', AuthController.refreshToken);
 router.use(authMiddleware);
 router.post('/change-password', AuthController.changePassword);
 router.post('/logout', AuthController.logout);
-router.get('/profile', AuthController.getProfile);
+
 
 export const AuthRoutes = router;

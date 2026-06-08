@@ -1,4 +1,3 @@
-// src/modules/auth/auth.controller.ts
 import { Request, Response } from 'express';
 import { catchAsync } from '../../utils/catchAsync.js';
 import { sendResponse } from '../../utils/sendResponse.js';
@@ -34,6 +33,18 @@ const loginUser = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
+const refreshToken = catchAsync(async (req: Request, res: Response) => {
+  const validatedData = refreshTokenValidationSchema.parse(req.body);
+  const result = await AuthService.refreshAccessToken(validatedData.refreshToken);
+
+  sendResponse(res, {
+    statusCode: 200,
+    success: true,
+    message: 'Token refreshed successfully',
+    data: result,
+  });
+});
+
 const changePassword = catchAsync(async (req: Request, res: Response) => {
   const validatedData = changePasswordValidationSchema.parse(req.body);
   const userId = req.user!.userId;
@@ -47,25 +58,14 @@ const changePassword = catchAsync(async (req: Request, res: Response) => {
   sendResponse(res, {
     statusCode: 200,
     success: true,
-    message: 'Password changed successfully',
+    message: 'Password changed successfully. Please login again.',
     data: null,
   });
 });
 
-const refreshToken = catchAsync(async (req: Request, res: Response) => {
-  const validatedData = refreshTokenValidationSchema.parse(req.body);
-  const result = await AuthService.refreshToken(validatedData.refreshToken);
-
-  sendResponse(res, {
-    statusCode: 200,
-    success: true,
-    message: 'Token refreshed successfully',
-    data: result,
-  });
-});
-
 const logout = catchAsync(async (req: Request, res: Response) => {
-  await AuthService.logout(req.user!.userId);
+  const refreshToken = req.body.refreshToken;
+  await AuthService.logout(req.user!.userId, refreshToken);
 
   sendResponse(res, {
     statusCode: 200,
@@ -75,21 +75,11 @@ const logout = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
-const getProfile = catchAsync(async (req: Request, res: Response) => {
-  // User is already attached by auth middleware
-  sendResponse(res, {
-    statusCode: 200,
-    success: true,
-    message: 'Profile fetched successfully',
-    data: req.user,
-  });
-});
 
 export const AuthController = {
   registerUser,
   loginUser,
-  changePassword,
   refreshToken,
+  changePassword,
   logout,
-  getProfile,
 };

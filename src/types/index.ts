@@ -1,5 +1,13 @@
 // src/types/index.ts
-import { Document, Types } from 'mongoose';
+import mongoose, { Document, Types } from 'mongoose';
+
+export interface IRefreshToken extends Document {
+  token: string;
+  userId: mongoose.Types.ObjectId;
+  expiresAt: Date;
+  isRevoked: boolean;
+  createdAt: Date;
+}
 
 export interface IOrganization extends Document {
   name: string;

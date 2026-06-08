@@ -89,7 +89,6 @@ const OrganizationSchema = new Schema<IOrganization>(
 );
 
 // Indexes for performance
-OrganizationSchema.index({ name: 1 });
 OrganizationSchema.index({ isActive: 1 });
 OrganizationSchema.index({ timezone: 1 });
 

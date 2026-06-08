@@ -31,7 +31,7 @@ export const globalErrorHandler = (
     statusCode = 400;
     message = "Validation failed";
 
-    errorDetails = err.errors.map((e: any) => ({
+    errorDetails = err.issues.map((e: any) => ({
       field: e.path.join("."),
       message: e.message,
     }));

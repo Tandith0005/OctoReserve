@@ -4,10 +4,11 @@ import crypto from 'crypto';
 import { User } from '../../models/User.model.js';
 import { Organization } from '../../models/Organization.model.js';
 import AppError from '../../utils/appError.js';
-import { generateToken, generateRefreshToken, verifyRefreshToken } from '../../utils/jwt.js';
-import { IRegisterUser, ILoginUser, IAuthResponse, IJwtPayload } from './auth.types.js';
+import { generateRefreshToken, verifyRefreshToken, generateAccessToken, getTokenExpiration } from '../../utils/jwt.js';
+import { IRegisterUser, ILoginUser, IAuthResponse, IJwtPayload, ITokenResponse } from './auth.types.js';
 import { UserRole, BookingStatus } from '../../types/index.js';
 import mongoose from 'mongoose';
+import { RefreshToken } from '../../models/RefreshToken.model.js';
 
 const registerUser = async (payload: IRegisterUser): Promise<IAuthResponse> => {
   const { name, email, password, organizationId, role } = payload;
@@ -81,8 +82,19 @@ const registerUser = async (payload: IRegisterUser): Promise<IAuthResponse> => {
       organizationId: user[0].organizationId.toString(),
     };
 
-    const token = generateToken(jwtPayload);
+    const accessToken = generateAccessToken(jwtPayload);
     const refreshToken = generateRefreshToken(jwtPayload);
+
+    // Save refresh token to database
+    const expiresAt = new Date();
+    expiresAt.setDate(expiresAt.getDate() + 7);
+
+    await RefreshToken.create({
+      token: refreshToken,
+      userId: user[0]._id,
+      expiresAt,
+      isRevoked: false,
+    });
 
     return {
       user: {
@@ -92,8 +104,9 @@ const registerUser = async (payload: IRegisterUser): Promise<IAuthResponse> => {
         role: user[0].role as UserRole,
         organizationId: user[0].organizationId.toString(),
       },
-      token,
+      accessToken,
       refreshToken,
+      expiresIn: getTokenExpiration(),
     };
   } catch (error) {
     await session.abortTransaction();
@@ -142,8 +155,19 @@ const loginUser = async (payload: ILoginUser): Promise<IAuthResponse> => {
     organizationId: user.organizationId.toString(),
   };
 
-  const token = generateToken(jwtPayload);
+  const accessToken = generateAccessToken(jwtPayload);
   const refreshToken = generateRefreshToken(jwtPayload);
+
+  // Save refresh token to database
+  const expiresAt = new Date();
+  expiresAt.setDate(expiresAt.getDate() + 7);
+  
+  await RefreshToken.create({
+    token: refreshToken,
+    userId: user._id,
+    expiresAt,
+    isRevoked: false,
+  });
 
   return {
     user: {
@@ -153,8 +177,70 @@ const loginUser = async (payload: ILoginUser): Promise<IAuthResponse> => {
       role: user.role as UserRole,
       organizationId: user.organizationId.toString(),
     },
-    token,
+    accessToken,
     refreshToken,
+    expiresIn: getTokenExpiration(),
+  };
+};
+
+const refreshAccessToken = async (oldRefreshToken: string): Promise<ITokenResponse> => {
+  // Verify refresh token
+  const decoded = verifyRefreshToken(oldRefreshToken);
+  
+  // Check if refresh token exists in database and is not revoked
+  const storedToken = await RefreshToken.findOne({
+    token: oldRefreshToken,
+    userId: decoded.userId,
+    isRevoked: false,
+    expiresAt: { $gt: new Date() }
+  });
+  
+  if (!storedToken) {
+    throw new AppError('Invalid or expired refresh token', 401);
+  }
+  
+  // Check if user still exists and is active
+  const user = await User.findById(decoded.userId);
+  if (!user || !user.isActive) {
+    throw new AppError('User not found or inactive', 401);
+  }
+  
+  // Check organization is active
+  const organization = await Organization.findById(user.organizationId);
+  if (!organization || !organization.isActive) {
+    throw new AppError('Organization is inactive. Please contact administrator', 401);
+  }
+  
+  // Revoke the old refresh token (one-time use)
+  storedToken.isRevoked = true;
+  await storedToken.save();
+  
+  // Generate new tokens
+  const jwtPayload: IJwtPayload = {
+    userId: user._id.toString(),
+    email: user.email,
+    role: user.role as UserRole,
+    organizationId: user.organizationId.toString(),
+  };
+  
+  const newAccessToken = generateAccessToken(jwtPayload);
+  const newRefreshToken = generateRefreshToken(jwtPayload);
+  
+  // Save new refresh token
+  const expiresAt = new Date();
+  expiresAt.setDate(expiresAt.getDate() + 7);
+  
+  await RefreshToken.create({
+    token: newRefreshToken,
+    userId: user._id,
+    expiresAt,
+    isRevoked: false,
+  });
+  
+  return {
+    accessToken: newAccessToken,
+    refreshToken: newRefreshToken,
+    expiresIn: getTokenExpiration(),
   };
 };
 
@@ -181,39 +267,34 @@ const changePassword = async (
   await user.save();
 };
 
-const refreshToken = async (refreshToken: string): Promise<{ token: string; refreshToken: string }> => {
-  const decoded = verifyRefreshToken(refreshToken);
-  
-  // Check if user still exists and is active
-  const user = await User.findById(decoded.userId);
-  if (!user || !user.isActive) {
-    throw new AppError('User not found or inactive', 401);
+const logout = async (userId: string, refreshToken?: string): Promise<void> => {
+  // Revoke the specific refresh token if provided
+  if (refreshToken) {
+    await RefreshToken.findOneAndUpdate(
+      { token: refreshToken, userId },
+      { isRevoked: true }
+    );
+  } else {
+    // Revoke all refresh tokens for the user
+    await RefreshToken.updateMany(
+      { userId, isRevoked: false },
+      { isRevoked: true }
+    );
   }
-
-  const jwtPayload: IJwtPayload = {
-    userId: user._id.toString(),
-    email: user.email,
-    role: user.role as UserRole,
-    organizationId: user.organizationId.toString(),
-  };
-
-  const newToken = generateToken(jwtPayload);
-  const newRefreshToken = generateRefreshToken(jwtPayload);
-
-  return { token: newToken, refreshToken: newRefreshToken };
 };
 
-const logout = async (userId: string): Promise<void> => {
-  // In a production app, you might want to blacklist the token
-  // For now, just return success (client will remove token)
-  // Optional: Store blacklisted tokens in Redis
-  return;
+const revokeAllUserTokens = async (userId: string): Promise<void> => {
+  await RefreshToken.updateMany(
+    { userId, isRevoked: false },
+    { isRevoked: true }
+  );
 };
 
 export const AuthService = {
   registerUser,
   loginUser,
   changePassword,
-  refreshToken,
+  refreshAccessToken,
+  revokeAllUserTokens,
   logout,
 };

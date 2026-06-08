@@ -1,8 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import AppError from '../../utils/appError.js';
-import { verifyToken } from '../../utils/jwt.js';
+import { verifyAccessToken } from '../../utils/jwt.js';
 import { User } from '../../models/User.model.js';
-
 
 export const authMiddleware = async (
   req: Request,
@@ -13,13 +12,13 @@ export const authMiddleware = async (
     // Get token from header
     const authHeader = req.headers.authorization;
     if (!authHeader || !authHeader.startsWith('Bearer ')) {
-      throw new AppError('No token provided', 401);
+      throw new AppError('No access token provided', 401);
     }
 
     const token = authHeader.split(' ')[1];
     
-    // Verify token
-    const decoded = verifyToken(token);
+    // Verify access token
+    const decoded = verifyAccessToken(token);
     
     // Check if user still exists and is active
     const user = await User.findById(decoded.userId);

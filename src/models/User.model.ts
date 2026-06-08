@@ -50,21 +50,6 @@ const UserSchema = new Schema<IUser>(
 UserSchema.index({ organizationId: 1, email: 1 }, { unique: true });
 UserSchema.index({ organizationId: 1, role: 1 });
 
-// Hash password before saving
-UserSchema.pre(
-  'save',
-  async function (next: CallbackWithoutResultAndOptionalError) {
-    if (!this.isModified('password')) return next();
-
-    try {
-      const salt = await bcrypt.genSalt(12);
-      this.password = await bcrypt.hash(this.password, salt);
-      next();
-    } catch (error) {
-      next(error as Error);
-    }
-  }
-);
 
 // Compare password method
 UserSchema.methods.comparePassword = async function(candidatePassword: string): Promise<boolean> {
