@@ -4,6 +4,7 @@ import { envVars } from "./config/envVars.js";
 import { notFound } from "./middlewares/notFound.js";
 import { globalErrorHandler } from "./middlewares/globalErrorHandler.js";
 import { IndexRoutes } from "./routes/indexRoutes.js";
+import './types/express.d.js';
 
 
 const app = express();
@@ -35,7 +36,7 @@ app.use("/api/v1", IndexRoutes);
 app.use(notFound);
 
 app.get("/", (req, res) => {
-  res.send("Booking API is running!");
+  res.send("OctoReserve is running!");
 });
 
 // global error handler

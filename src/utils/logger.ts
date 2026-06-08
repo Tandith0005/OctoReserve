@@ -20,4 +20,10 @@ export const logger = {
       console.warn(...args);
     }
   },
+
+  info: (...args: unknown[]) => {
+    if (envVars.NODE_ENV === "development") {
+      console.info(...args);
+    }
+  },
 };
