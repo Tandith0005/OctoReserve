@@ -2,6 +2,7 @@ import { Request, Response, NextFunction } from 'express';
 import AppError from '../../utils/appError.js';
 import { verifyAccessToken } from '../../utils/jwt.js';
 import { User } from '../../models/User.model.js';
+import { logger } from '../../utils/logger.js';
 
 export const authMiddleware = async (
   req: Request,
@@ -9,6 +10,7 @@ export const authMiddleware = async (
   next: NextFunction
 ) => {
   try {
+    logger.log('AUTH HEADER:', req.headers);
     // Get token from header
     const authHeader = req.headers.authorization;
     if (!authHeader || !authHeader.startsWith('Bearer ')) {
