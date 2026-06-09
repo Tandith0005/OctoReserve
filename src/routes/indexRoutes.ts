@@ -27,7 +27,7 @@ router.use("/availability", AvailabilityRoutes);
 
 // test route
 router.get("/health", (req, res) => {
-    res.status(200).json({ status: '200', timestamp: new Date().toISOString() });
+    res.status(200).json({ status: 'OK', timestamp: new Date().toISOString() });
 });
 
 export const IndexRoutes = router;
