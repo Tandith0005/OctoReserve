@@ -34,12 +34,10 @@ const BookingSchema = new Schema<IBooking>(
     startTime: {
       type: Date,
       required: true,
-      index: true,
     },
     endTime: {
       type: Date,
       required: true,
-      index: true,
     },
     duration: {
       type: Number,
@@ -50,7 +48,6 @@ const BookingSchema = new Schema<IBooking>(
       type: String,
       enum: Object.values(BookingStatus),
       default: 'CONFIRMED',
-      index: true,
     },
     cancelledAt: Date,
     cancelledBy: {

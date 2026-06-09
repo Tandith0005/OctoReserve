@@ -9,7 +9,6 @@ const UserSchema = new Schema<IUser>(
       required: true,
       lowercase: true,
       trim: true,
-      index: true,
     },
     password: {
       type: String,
@@ -31,7 +30,6 @@ const UserSchema = new Schema<IUser>(
       type: Schema.Types.ObjectId,
       ref: 'Organization',
       required: true,
-      index: true,
     },
     isActive: {
       type: Boolean,
