@@ -92,18 +92,18 @@ BookingSchema.index({
 });
 
 // Pre-save validation
-BookingSchema.pre('save', function(next) {
+BookingSchema.pre('save', function () {
   // Ensure endTime is after startTime
   if (this.startTime >= this.endTime) {
-    next(new AppError('End time must be after start time', 400));
+    throw new AppError('End time must be after start time', 400);
   }
-  
+
   // Calculate duration if not provided
   if (!this.duration) {
-    this.duration = Math.round((this.endTime.getTime() - this.startTime.getTime()) / (1000 * 60));
+    this.duration = Math.round(
+      (this.endTime.getTime() - this.startTime.getTime()) / (1000 * 60)
+    );
   }
-  
-  next();
 });
 
 // Method to check if booking is active

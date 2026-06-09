@@ -2,6 +2,7 @@ import { Router } from "express";
 import { AuthRoutes } from "../modules/auth/auth.routes.js";
 import { OrganizationRoutes } from "../modules/organization/organization.routes.js";
 import { ResourceRoutes } from "../modules/resource/resource.routes.js";
+import { BookingRoutes } from "../modules/booking/booking.router.js";
 
 const router = Router();
 
@@ -12,5 +13,20 @@ router.use("/auth", AuthRoutes);
 router.use("/organization", OrganizationRoutes); 
 // Resource routes -----------------------------------
 router.use("/resources", ResourceRoutes);
+// Booking routes -----------------------------------
+router.use("/bookings", BookingRoutes);
+
+
+
+
+
+
+
+
+
+// test route
+router.get("/health", (req, res) => {
+    res.status(200).json({ status: 'OK', timestamp: new Date().toISOString() });
+});
 
 export const IndexRoutes = router;
