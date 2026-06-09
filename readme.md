@@ -14,7 +14,7 @@ A production-ready backend system for managing shared resources across multiple 
 - [Contribution](#contribution)
 
 
-## 🎯 Overview
+# 🎯 Overview
 
 This backend system enables multiple organizations to manage shared resources (meeting rooms, desks, devices) and allows employees to create time-based bookings. The system ensures complete tenant isolation, prevents booking conflicts, respects timezone configurations, and generates dynamic availability slots.
 
@@ -26,7 +26,7 @@ This backend system enables multiple organizations to manage shared resources (m
 - **Conflict Prevention**: Prevents overlapping bookings with buffer time support
 - **Role-Based Access**: ORG_ADMIN and EMPLOYEE roles with proper permissions
 
-## ✨ Features
+# ✨ Features
 
 ### Core Features
 
@@ -87,7 +87,7 @@ This backend system enables multiple organizations to manage shared resources (m
 | Logging | Winston | 3.x |
 | Dev | Nodemon | 3.x |
 
-## 🏗 Architecture
+# 🏗 Architecture
 
 ### Project Structure
 src/
@@ -143,14 +143,14 @@ All data models include `organizationId` field with indexes:
 - Users belong to exactly one organization
 - All queries automatically filter by `organizationId`
 
-## 📋 Prerequisites
+# 📋 Prerequisites
 
 - Node.js (v20 or higher)
 - MongoDB (v6 or higher)
 - npm or yarn package manager
 - Git
 
-## 🚀 Installation & Setup
+# 🚀 Installation & Setup
 
 
 ```bash
@@ -172,7 +172,7 @@ http://localhost:5000/ # You'll see OctoReserve is running! meaning server is ru
 http://localhost:5000/api/v1/health # You'll see {"status": "OK","timestamp": "Year-Month-Day Timezone"} meaning v1 is running fine
 ```
 
-## 📊 Database Schema
+# 📊 Database Schema
 
 ### Organization Schema
 ```typescript
@@ -244,14 +244,14 @@ http://localhost:5000/api/v1/health # You'll see {"status": "OK","timestamp": "Y
 }
 ```
 
-## Authentication
+# Authentication
 
 ### All protected endpoints require a Bearer token:
 ```text
 Authorization: Bearer <access_token>
 ```
 
-## 🤝 Contributing
+# 🤝 Contributing
 
 While this is an assessment project, contributions are welcome. Please follow these steps:
 1. Fork the repository
