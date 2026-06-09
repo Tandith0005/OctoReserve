@@ -6,26 +6,13 @@ A production-ready backend system for managing shared resources across multiple 
 
 - [Overview](#overview)
 - [Features](#features)
-- [Technology Stack](#technology-stack)
 - [Architecture](#architecture)
 - [Prerequisites](#prerequisites)
 - [Installation & Setup](#installation--setup)
-- [Environment Variables](#environment-variables)
 - [Database Schema](#database-schema)
-- [API Documentation](#api-documentation)
-  - [Authentication](#authentication)
-  - [Organization Management](#organization-management)
-  - [Resource Management](#resource-management)
-  - [Booking Management](#booking-management)
-  - [Availability Engine](#availability-engine)
-- [Error Handling](#error-handling)
-- [Testing](#testing)
-- [Performance Optimization](#performance-optimization)
-- [Security Considerations](#security-considerations)
-- [Deployment](#deployment)
-- [Video Walkthrough](#video-walkthrough)
-- [Assessment Criteria](#assessment-criteria)
-- [License](#license)
+- [AUTHENTICATION](#authentication)
+- [Contribution](#contribution)
+
 
 ## 🎯 Overview
 
