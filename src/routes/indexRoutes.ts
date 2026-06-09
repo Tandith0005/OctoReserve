@@ -3,6 +3,7 @@ import { AuthRoutes } from "../modules/auth/auth.routes.js";
 import { OrganizationRoutes } from "../modules/organization/organization.routes.js";
 import { ResourceRoutes } from "../modules/resource/resource.routes.js";
 import { BookingRoutes } from "../modules/booking/booking.router.js";
+import { AvailabilityRoutes } from "../modules/availability/availability.routes.js";
 
 const router = Router();
 
@@ -15,8 +16,8 @@ router.use("/organization", OrganizationRoutes);
 router.use("/resources", ResourceRoutes);
 // Booking routes -----------------------------------
 router.use("/bookings", BookingRoutes);
-
-
+// availability routes -----------------------------------
+router.use("/availability", AvailabilityRoutes);
 
 
 
@@ -26,7 +27,7 @@ router.use("/bookings", BookingRoutes);
 
 // test route
 router.get("/health", (req, res) => {
-    res.status(200).json({ status: 'OK', timestamp: new Date().toISOString() });
+    res.status(200).json({ status: '200', timestamp: new Date().toISOString() });
 });
 
 export const IndexRoutes = router;
