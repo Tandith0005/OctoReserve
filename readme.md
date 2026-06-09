@@ -26,6 +26,11 @@ This backend system enables multiple organizations to manage shared resources (m
 - **Conflict Prevention**: Prevents overlapping bookings with buffer time support
 - **Role-Based Access**: ORG_ADMIN and EMPLOYEE roles with proper permissions
 
+
+## ErDiagram {#erd}
+
+![ERD](./octoReserve-erd.png)
+
 ## ✨ Features {#features}
 
 ### Core Features
