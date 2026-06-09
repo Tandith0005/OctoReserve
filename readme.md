@@ -168,8 +168,8 @@ All data models include `organizationId` field with indexes:
 
 ```bash
 1. Clone the Repository
-git clone https://github.com/yourusername/resource-booking-system.git
-cd resource-booking-system
+git clone https://github.com/Tandith0005/OctoReserve.git
+cd OctoReserve
 
 2. Install Dependencies
 npm install
@@ -188,7 +188,7 @@ http://localhost:5000/api/v1/health # You'll see {"status": "OK","timestamp": "Y
 ## 📊 Database Schema
 
 ### Organization Schema
-```json
+```typescript
 {
   name: string (unique),
   timezone: string,
@@ -212,7 +212,7 @@ http://localhost:5000/api/v1/health # You'll see {"status": "OK","timestamp": "Y
 ```
 
 ### User Schema
-```json
+```typescript
 {
   email: string (unique),
   password: string (hashed),
@@ -225,7 +225,7 @@ http://localhost:5000/api/v1/health # You'll see {"status": "OK","timestamp": "Y
 ```
 
 ### Resource Schema
-```json
+```typescript
 {
   name: string,
   type: 'MEETING_ROOM' | 'DESK' | 'DEVICE' | 'OTHER',
@@ -240,7 +240,7 @@ http://localhost:5000/api/v1/health # You'll see {"status": "OK","timestamp": "Y
 ```
 
 ### Booking Schema
-```json
+```typescript
 {
   resourceId: ObjectId,
   organizationId: ObjectId,
